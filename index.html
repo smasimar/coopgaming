@@ -10,8 +10,8 @@
         color: #fff;
     }
     table {
-        margin: 0 auto; /* Center the table */
-        width: auto; /* Adjust the width as needed */
+        margin: 0 auto;
+        width: auto;
         border-collapse: collapse;
         background-color: #333;
         border: 1px solid #222;
@@ -28,7 +28,7 @@
     tr:hover {
         background-color: #444;
     }
-    .checkmark {
+    .owned {
         font-size: 36px;
     }
 </style>
@@ -38,12 +38,12 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('data.csv')
+    fetch('https://smasimar.github.io/coopgaming/data.csv')
     /*  CSV should look like this:
-        GameID,p1Owned,p2Owned
-        221040,true,true
-        21690,true,true
-        1065310,true,false  */
+        GameName,GameID,p1Owned,p2Owned
+        Game 1,123456,true,true
+        Game 2,456789,true,false
+        Game 3,789123,false,false  */
     .then(response => response.text())
     .then(csvData => {
         var parsedData = parseCSV(csvData);
@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Iterate over data to create table rows
         data.forEach(function(item) {
-            var p1Owned = `<span class="checkmark">${item.p1Owned === 'true' ? '✔️' : '⭕'}</span>`;
-            var p2Owned = `<span class="checkmark">${item.p2Owned === 'true' ? '✔️' : '⭕'}</span>`;
-            var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="646" height="190"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
+            var p1Owned = `<span class="owned">${item.p1Owned === 'true' ? '✔️' : '⭕'}</span>`;
+            var p2Owned = `<span class="owned">${item.p2Owned === 'true' ? '✔️' : '⭕'}</span>`;
+            var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="650" height="190" title="${item.GameName}"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
             tableHTML += rowHTML;
         });
 
