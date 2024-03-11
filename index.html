@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CSV Content Website</title>
+<title>Co-op Gaming Tracker</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -36,11 +36,14 @@
 <table id="content"></table>
 
 <script>
-// Sample hardcoded CSV variable
-var csvData = `GameID,Player1Ownership,Player2Ownership
-221040,true,true
-21690,true,true
-1065310,true,false`;
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('data.csv')
+    .then(response => response.text())
+    .then(csvData => {
+        var parsedData = parseCSV(csvData);
+        generateContent(parsedData);
+    })
+    .catch(error => console.error('Error fetching the CSV file:', error));
 
 // Sample URLs to images for player ownership
 var player1ImageUrl = "https://community.cloudflare.steamstatic.com/public/shared/images/userreviews/icon_thumbsUp.png";
