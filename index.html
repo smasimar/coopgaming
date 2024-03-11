@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSV Content Website</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #333;
+        color: #fff;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #555;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #555;
+    }
+    th {
+        background-color: #555;
+    }
+    tr:hover {
+        background-color: #444;
+    }
+    img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+</style>
+</head>
+<body>
+<table id="content"></table>
+
+<script>
+// Sample hardcoded CSV variable
+var csvData = `GameID,Player1Ownership,Player2Ownership
+221040,true,true
+21690,true,true
+1065310,true,false`;
+
+// Sample URLs to images for player ownership
+var player1ImageUrl = "https://community.cloudflare.steamstatic.com/public/shared/images/userreviews/icon_thumbsUp.png";
+var player2ImageUrl = "https://community.cloudflare.steamstatic.com/public/shared/images/userreviews/icon_thumbsDown.png";
+
+// Parse CSV data
+function parseCSV(csv) {
+    var lines = csv.split('\n');
+    var result = [];
+    var headers = lines[0].split(',');
+    for (var i = 1; i < lines.length; i++) {
+        var obj = {};
+        var currentline = lines[i].split(',');
+        for (var j = 0; j < headers.length; j++) {
+            obj[headers[j].trim()] = currentline[j].trim();
+        }
+        result.push(obj);
+    }
+    return result;
+}
+
+// Generate HTML content
+function generateContent(data) {
+    var content = document.getElementById('content');
+    content.innerHTML = ''; // Clear previous content
+    
+    // Create table header
+    var tableHTML = "<tr><th>Game ID</th><th>Masimar</th><th>McCree</th></tr>";
+    
+    // Iterate over data to create table rows
+    data.forEach(function(item) {
+        var player1Ownership = `<img src="${item.Player1Ownership === 'true' ? player1ImageUrl : player2ImageUrl}" alt="${item.Player1Ownership}">`;
+        var player2Ownership = `<img src="${item.Player2Ownership === 'true' ? player1ImageUrl : player2ImageUrl}" alt="${item.Player2Ownership}">`;
+        var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="646" height="190"></iframe></td><td>${player1Ownership}</td><td>${player2Ownership}</td></tr>`;
+        tableHTML += rowHTML;
+    });
+    
+    // Append table to content
+    content.innerHTML = '<table border="1">' + tableHTML + '</table>';
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    var parsedData = parseCSV(csvData);
+    generateContent(parsedData);
+});
+</script>
+</body>
+</html>
