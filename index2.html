@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Co-op Gaming Tracker</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.6/css/jquery.dataTables.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+        }
+        table {
+            margin: 0 auto;
+            width: auto;
+            border-collapse: collapse;
+            border: 1px solid #555;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #555;
+        }
+        th {
+            background-color: #555;
+        }
+        tr:hover {
+            background-color: #444;
+        }
+        img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <table id="content">
+        <thead>
+            <tr>
+                <th>Game ID</th>
+                <th>Masimar</th>
+                <th>McCree</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table content will be dynamically generated here -->
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.6/js/jquery.dataTables.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('https://smasimar.github.io/coopgaming/data.csv')
+            .then(response => response.text())
+            .then(csvData => {
+                var parsedData = parseCSV(csvData);
+                generateContent(parsedData);
+            })
+            .catch(error => console.error('Error fetching the CSV file:', error));
+
+            // URLs to images for player ownership
+            var ownedImgURL = "https://community.cloudflare.steamstatic.com/public/shared/images/userreviews/icon_thumbsUp.png";
+            var unownedImgURL = "https://community.cloudflare.steamstatic.com/public/shared/images/userreviews/icon_thumbsDown.png";
+
+            // Parse CSV data
+            function parseCSV(csv) {
+                var lines = csv.split('\n');
+                var result = [];
+                var headers = lines[0].split(',');
+                for (var i = 1; i < lines.length; i++) {
+                    var obj = {};
+                    var currentline = lines[i].split(',');
+                    for (var j = 0; j < headers.length; j++) {
+                        obj[headers[j].trim()] = currentline[j].trim();
+                    }
+                    result.push(obj);
+                }
+                return result;
+            }
+
+            // Generate HTML content
+            function generateContent(data) {
+                var content = document.querySelector('#content tbody');
+                content.innerHTML = ''; // Clear previous content
+
+                // Iterate over data to create table rows
+                data.forEach(function(item) {
+                    var p1Owned = `<img src="${item.p1Owned === 'true' ? ownedImgURL : unownedImgURL}" alt="${item.p1Owned}">`;
+                    var p2Owned = `<img src="${item.p2Owned === 'true' ? ownedImgURL : unownedImgURL}" alt="${item.p2Owned}">`;
+                    var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="646" height="190"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
+                    content.innerHTML += rowHTML;
+                });
+
+                $('#content').DataTable(); // Initialize DataTable
+            }
+        });
+    </script>
+</body>
+</html>
