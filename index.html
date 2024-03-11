@@ -39,6 +39,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     fetch('data.csv')
+    /*  CSV should look like this:
+        GameID,p1Owned,p2Owned
+        221040,true,true
+        21690,true,true
+        1065310,true,false  */
     .then(response => response.text())
     .then(csvData => {
         var parsedData = parseCSV(csvData);
@@ -46,9 +51,9 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(error => console.error('Error fetching the CSV file:', error));
 
-    // Sample URLs to images for player ownership
-    var player1ImageUrl = "url_to_player1_image.jpg";
-    var player2ImageUrl = "url_to_player2_image.jpg";
+    // URLs to images for player ownership
+    var ownedImgURL = "https://community.cloudflare.steamstatic.com/public/shared/images/userreviews/icon_thumbsUp.png";
+    var unownedImgURL = "https://community.cloudflare.steamstatic.com/public/shared/images/userreviews/icon_thumbsDown.png";
 
     // Parse CSV data
     function parseCSV(csv) {
@@ -72,13 +77,13 @@ document.addEventListener('DOMContentLoaded', function() {
         content.innerHTML = ''; // Clear previous content
 
         // Create table header
-        var tableHTML = "<tr><th>Game ID</th><th>Player 1 Ownership</th><th>Player 2 Ownership</th></tr>";
+        var tableHTML = "<tr><th>Game ID</th><th>Masimar</th><th>McCree</th></tr>";
 
         // Iterate over data to create table rows
         data.forEach(function(item) {
-            var player1Ownership = `<img src="${item.Player1Ownership === 'true' ? player1ImageUrl : player2ImageUrl}" alt="${item.Player1Ownership}">`;
-            var player2Ownership = `<img src="${item.Player2Ownership === 'true' ? player1ImageUrl : player2ImageUrl}" alt="${item.Player2Ownership}">`;
-            var rowHTML = `<tr><td>${item.GameID}</td><td>${player1Ownership}</td><td>${player2Ownership}</td></tr>`;
+            var p1Owned = `<img src="${item.p1Owned === 'true' ? ownedImgURL : unownedImgURL}" alt="${item.p1Owned}">`;
+            var p2Owned = `<img src="${item.p2Owned === 'true' ? ownedImgURL : unownedImgURL}" alt="${item.p2Owned}">`;
+            var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="646" height="190"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
             tableHTML += rowHTML;
         });
 
