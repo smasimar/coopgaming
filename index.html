@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Co-op Gaming Tracker Website</title>
+<title>Co-op Gaming Tracker</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => console.error('Error fetching the CSV file:', error));
 
     // Sample URLs to images for player ownership
-    var ownedImgURL = "https://community.cloudflare.steamstatic.com/public/shared/images/userreviews/icon_thumbsUp.png";
-    var unownedImgURL = "https://community.cloudflare.steamstatic.com/public/shared/images/userreviews/icon_thumbsDown.png";
+    var player1ImageUrl = "url_to_player1_image.jpg";
+    var player2ImageUrl = "url_to_player2_image.jpg";
 
     // Parse CSV data
     function parseCSV(csv) {
@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Iterate over data to create table rows
         data.forEach(function(item) {
-            var player1Ownership = `<img src="${item.Player1Ownership === 'true' ? ownedImgURL : unownedImgURL}" alt="${item.Player1Ownership}">`;
-            var player2Ownership = `<img src="${item.Player2Ownership === 'true' ? ownedImgURL : unownedImgURL}" alt="${item.Player2Ownership}">`;
-            var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="646" height="190"></td><td>${player1Ownership}</td><td>${player2Ownership}</td></tr>`;
+            var player1Ownership = `<img src="${item.Player1Ownership === 'true' ? player1ImageUrl : player2ImageUrl}" alt="${item.Player1Ownership}">`;
+            var player2Ownership = `<img src="${item.Player2Ownership === 'true' ? player1ImageUrl : player2ImageUrl}" alt="${item.Player2Ownership}">`;
+            var rowHTML = `<tr><td>${item.GameID}</td><td>${player1Ownership}</td><td>${player2Ownership}</td></tr>`;
             tableHTML += rowHTML;
         });
 
