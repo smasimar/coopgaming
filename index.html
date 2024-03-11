@@ -12,7 +12,8 @@
         color: #fff;
     }
     table {
-        width: 100%;
+        margin: 0 auto; /* Center the table */
+        width: auto; /* Adjust the width as needed */
         border-collapse: collapse;
         border: 1px solid #555;
     }
@@ -38,7 +39,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('data.csv')
+    fetch('https://smasimar.github.io/coopgaming/data.csv')
     /*  CSV should look like this:
         GameID,p1Owned,p2Owned
         221040,true,true
