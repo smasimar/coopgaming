@@ -84,27 +84,12 @@ document.addEventListener('DOMContentLoaded', function() {
         data.forEach(function(item) {
             var p1Owned = `<img src="${item.p1Owned === 'true' ? ImgCheck : ImgCross}" alt="${item.p1Owned}">`;
             var p2Owned = `<img src="${item.p2Owned === 'true' ? ImgCheck : ImgCross}" alt="${item.p2Owned}">`;
-            var rowHTML = `<tr><td><iframe id="iframe-${item.GameID}" src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="646" height="190"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
+            var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="646" height="190"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
             tableHTML += rowHTML;
         });
 
         // Append table to content
         content.innerHTML = '<table border="1">' + tableHTML + '</table>';
-
-        // Identify iframes and extract prices
-        data.forEach(function(item) {
-            var iframe = document.getElementById(`iframe-${item.GameID}`);
-            if (iframe) {
-                iframe.onload = function() {
-                    var iframeContent = this.contentWindow.document;
-                    var priceElement = iframeContent.querySelector('.discount_final_price, .game_purchace_price.price');
-                    if (priceElement) {
-                        var price = priceElement.textContent.trim();
-                        this.title = 'Price: ' + price;
-                    }
-                };
-            }
-        });
     }
 });
 </script>
