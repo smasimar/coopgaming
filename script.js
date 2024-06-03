@@ -1,16 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
-	fetch('https://smasimar.github.io/coopgaming/data.csv')
-	//fetch('data.csv')
+	fetch('data.csv')
 	/*  CSV should look like this:
 		GameName,GameID,p1Owned,p2Owned,finished
-		Game 1,123456,true,true,false,true
-		Game 2,456789,true,false,false,false
-		Game 3,789123,false,false,true,false  */
+		Game 1,123456,true,true,false
+		Game 2,456789,true,false,false
+		Game 3,789123,false,false,true  */
 	.then(response => response.text())
 	.then(csvData => {
 		console.log("CSV file fetched successfully:", csvData);
 		var parsedData = parseCSV(csvData);
 		console.log("Parsed CSV data:", parsedData);
+
+		// Sort data by GameName
+		parsedData.sort((a, b) => a.GameName.localeCompare(b.GameName));
+
 		generateTables(parsedData);
 	})
 	.catch(error => console.error('Error fetching the CSV file:', error));
@@ -26,17 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	// Generate HTML content for tables
 	function generateTables(data) {
-		var unfinishedContent = document.getElementById('unfinished');
-		var finishedContent = document.getElementById('finished');
+		var unfinishedContent = document.getElementById('unfinished').querySelector('tbody');
+		var finishedContent = document.getElementById('finished').querySelector('tbody');
 		unfinishedContent.innerHTML = ''; // Clear previous content
 		finishedContent.innerHTML = ''; // Clear previous content
-
-		// Create table headers
-		var tableHeader = "<tr><th>Game</th><th>Masimar</th><th>McCree</th></tr>";
-
-		// Initialize table contents with headers
-		var unfinishedTableHTML = tableHeader;
-		var finishedTableHTML = tableHeader;
 
 		// Iterate over data to create table rows
 		data.forEach(function(item) {
@@ -45,14 +41,14 @@ document.addEventListener('DOMContentLoaded', function() {
 			var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="650" height="190" title="${item.GameName}"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
 
 			if (item.finished === 'true') {
-				finishedTableHTML += rowHTML;
+				finishedContent.innerHTML += rowHTML;
 			} else {
-				unfinishedTableHTML += rowHTML;
+				unfinishedContent.innerHTML += rowHTML;
 			}
 		});
 
-		// Append tables to content
-		unfinishedContent.innerHTML = '<table border="1">' + unfinishedTableHTML + '</table>';
-		finishedContent.innerHTML = '<table border="1">' + finishedTableHTML + '</table>';
+		// Initialize Tablesort for both tables
+		new Tablesort(document.querySelector('#unfinished'));
+		new Tablesort(document.querySelector('#finished'));
 	}
 });
