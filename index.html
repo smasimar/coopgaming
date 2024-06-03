@@ -1,88 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Co-op Gaming Tracker</title>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #222;
-        color: #fff;
-    }
-    table {
-        margin: 0 auto;
-        width: auto;
-        border-collapse: collapse;
-        background-color: #333;
-        border: 1px solid #222;
-    }
-    th, td {
-        padding: 8px;
-        text-align: center;
-        border-bottom: 8px solid #222;
-    }
-    th {
-        text-align: left;
-        background-color: #666;
-    }
-    tr:hover {
-        background-color: #444;
-    }
-    .owned {
-        font-size: 36px;
-    }
-</style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Co-op Gaming Tracker</title>
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<table id="content"></table>
+	<h2>Games to play</h2>
+	<table id="unfinished"></table>
+	<h2>Finished games</h2>
+	<table id="finished"></table>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('data.csv')
-    /*  CSV should look like this:
-        GameName,GameID,p1Owned,p2Owned
-        Game 1,123456,true,true
-        Game 2,456789,true,false
-        Game 3,789123,false,false  */
-    .then(response => response.text())
-    .then(csvData => {
-        console.log("CSV file fetched successfully:", csvData);
-        var parsedData = parseCSV(csvData);
-        console.log("Parsed CSV data:", parsedData);
-        generateContent(parsedData);
-    })
-    .catch(error => console.error('Error fetching the CSV file:', error));
-
-    // Parse CSV data using PapaParse
-    function parseCSV(csv) {
-        var result = Papa.parse(csv, {
-            header: true,
-            skipEmptyLines: true
-        });
-        return result.data;
-    }
-
-    // Generate HTML content
-    function generateContent(data) {
-        var content = document.getElementById('content');
-        content.innerHTML = ''; // Clear previous content
-
-        // Create table header
-        var tableHTML = "<tr><th>Game</th><th>Masimar</th><th>McCree</th></tr>";
-
-        // Iterate over data to create table rows
-        data.forEach(function(item) {
-            var p1Owned = `<span class="owned">${item.p1Owned === 'true' ? '✔️' : '⭕'}</span>`;
-            var p2Owned = `<span class="owned">${item.p2Owned === 'true' ? '✔️' : '⭕'}</span>`;
-            var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="650" height="190" title="${item.GameName}"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
-            tableHTML += rowHTML;
-        });
-
-        // Append table to content
-        content.innerHTML = '<table border="1">' + tableHTML + '</table>';
-    }
-});
-</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
+	<script src="script.js"></script>
 </body>
 </html>
