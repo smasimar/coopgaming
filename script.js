@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
 	fetch('data.csv')
-	/*  CSV should look like this:
+	/*	CSV should look like this:
 		GameName,GameID,p1Owned,p2Owned,finished
-		Game 1,123456,true,true,false
+		Game 1,123456,true,true,true
 		Game 2,456789,true,false,false
-		Game 3,789123,false,false,true  */
+		Game 3,789123,false,false,false	*/
 	.then(response => response.text())
 	.then(csvData => {
 		console.log("CSV file fetched successfully:", csvData);
@@ -45,6 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		unfinishedContent.innerHTML = ''; // Clear previous content
 		finishedContent.innerHTML = ''; // Clear previous content
 
+		// Sort data by GameName
+		data.sort((a, b) => a.GameName.localeCompare(b.GameName));
+
 		let unfinishedRows = '';
 		let finishedRows = '';
 
@@ -53,7 +56,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			const p1Owned = `<span class="owned">${item.p1Owned === 'true' ? '✔️' : '⭕'}</span>`;
 			const p2Owned = `<span class="owned">${item.p2Owned === 'true' ? '✔️' : '⭕'}</span>`;
 			const iframeId = `iframe-${item.GameID}`;
-			const rowHTML = `<tr><td><div id="${iframeId}-loader" class="iframe-loader"><div class="throbber"></div></div><iframe id="${iframeId}" src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="650" height="190" title="${item.GameName}" style="display:none;" onload="document.getElementById('${iframeId}-loader').style.display='none'; this.style.display='block';"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
+			const rowHTML = `<tr>
+				<td>
+					<div id="${iframeId}-loader" class="iframe-loader"></div>
+					<iframe id="${iframeId}" src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="650" height="190" title="${item.GameName}" style="display:none;" onload="document.getElementById('${iframeId}-loader').style.display='none'; this.style.display='block';"></iframe>
+					<span style="display:none;">${item.GameName}</span>
+				</td>
+				<td>${p1Owned}</td>
+				<td>${p2Owned}</td>
+			</tr>`;
 
 			if (item.finished === 'true') {
 				finishedRows += rowHTML;
