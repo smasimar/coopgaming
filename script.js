@@ -8,47 +8,66 @@ document.addEventListener('DOMContentLoaded', function() {
 	.then(response => response.text())
 	.then(csvData => {
 		console.log("CSV file fetched successfully:", csvData);
-		var parsedData = parseCSV(csvData);
+		const parsedData = parseCSV(csvData);
 		console.log("Parsed CSV data:", parsedData);
-
-		// Sort data by GameName
-		parsedData.sort((a, b) => a.GameName.localeCompare(b.GameName));
-
 		generateTables(parsedData);
 	})
-	.catch(error => console.error('Error fetching the CSV file:', error));
+	.catch(error => {
+		console.error('Error fetching the CSV file:', error);
+		document.getElementById('loading').textContent = 'Failed to load data.';
+	});
 
 	// Parse CSV data using PapaParse
 	function parseCSV(csv) {
-		var result = Papa.parse(csv, {
-			header: true,
-			skipEmptyLines: true
-		});
-		return result.data;
+		try {
+			const result = Papa.parse(csv, {
+				header: true,
+				skipEmptyLines: true
+			});
+			if (result.errors.length) {
+				console.error('Errors parsing CSV:', result.errors);
+				return [];
+			}
+			return result.data;
+		} catch (error) {
+			console.error('Error parsing CSV:', error);
+			return [];
+		}
 	}
 
 	// Generate HTML content for tables
 	function generateTables(data) {
-		var unfinishedContent = document.getElementById('unfinished').querySelector('tbody');
-		var finishedContent = document.getElementById('finished').querySelector('tbody');
+		const unfinishedTable = document.getElementById('unfinished');
+		const finishedTable = document.getElementById('finished');
+		const unfinishedContent = unfinishedTable.querySelector('tbody');
+		const finishedContent = finishedTable.querySelector('tbody');
+
 		unfinishedContent.innerHTML = ''; // Clear previous content
 		finishedContent.innerHTML = ''; // Clear previous content
 
+		let unfinishedRows = '';
+		let finishedRows = '';
+
 		// Iterate over data to create table rows
 		data.forEach(function(item) {
-			var p1Owned = `<span class="owned">${item.p1Owned === 'true' ? '✔️' : '⭕'}</span>`;
-			var p2Owned = `<span class="owned">${item.p2Owned === 'true' ? '✔️' : '⭕'}</span>`;
-			var rowHTML = `<tr><td><iframe src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="650" height="190" title="${item.GameName}"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
+			const p1Owned = `<span class="owned">${item.p1Owned === 'true' ? '✔️' : '⭕'}</span>`;
+			const p2Owned = `<span class="owned">${item.p2Owned === 'true' ? '✔️' : '⭕'}</span>`;
+			const iframeId = `iframe-${item.GameID}`;
+			const rowHTML = `<tr><td><div id="${iframeId}-loader" class="iframe-loader"><div class="throbber"></div></div><iframe id="${iframeId}" src="https://store.steampowered.com/widget/${item.GameID}/" frameborder="0" width="650" height="190" title="${item.GameName}" style="display:none;" onload="document.getElementById('${iframeId}-loader').style.display='none'; this.style.display='block';"></iframe></td><td>${p1Owned}</td><td>${p2Owned}</td></tr>`;
 
 			if (item.finished === 'true') {
-				finishedContent.innerHTML += rowHTML;
+				finishedRows += rowHTML;
 			} else {
-				unfinishedContent.innerHTML += rowHTML;
+				unfinishedRows += rowHTML;
 			}
 		});
 
+		// Append rows to table bodies
+		unfinishedContent.innerHTML = unfinishedRows;
+		finishedContent.innerHTML = finishedRows;
+
 		// Initialize Tablesort for both tables
-		new Tablesort(document.querySelector('#unfinished'));
-		new Tablesort(document.querySelector('#finished'));
+		new Tablesort(unfinishedTable);
+		new Tablesort(finishedTable);
 	}
 });
